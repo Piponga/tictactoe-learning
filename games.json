@@ -1,0 +1,60 @@
+{
+  "status": "ok",
+  "code": 0,
+  "games": [
+    {
+      "gameToken": "1",
+      "owner": "Chuck Norris",
+      "opponent": "",
+      "size": 3,
+      "gameDuration": 12323,
+      "gameResult": "",
+      "state": "ready"
+    },
+    {
+      "gameToken": "2",
+      "owner": "Boris",
+      "opponent": "",
+      "size": 3,
+      "gameDuration": 22323,
+      "gameResult": "",
+      "state": "ready"
+    },
+    {
+      "gameToken": "3",
+      "owner": "James Bond",
+      "opponent": "Chuck Norris",
+      "size": 3,
+      "gameDuration": 4456143,
+      "gameResult": "",
+      "state": "playing"
+    },
+    {
+      "gameToken": "4",
+      "owner": "Jessica",
+      "opponent": "Arnold",
+      "size": 3,
+      "gameDuration": 998964,
+      "gameResult": "opponent",
+      "state": "done"
+    },
+    {
+      "gameToken": "5",
+      "owner": "Chuck Norris",
+      "opponent": "Arnold",
+      "size": 3,
+      "gameDuration": 4546,
+      "gameResult": "owner",
+      "state": "done"
+    },
+    {
+      "gameToken": "6",
+      "owner": "Chuck Norris",
+      "opponent": "James Bond",
+      "size": 3,
+      "gameDuration": 4532188645345,
+      "gameResult": "",
+      "state": "done"
+    }
+  ]
+}

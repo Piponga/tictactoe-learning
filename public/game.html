@@ -1,0 +1,161 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=534">
+
+
+    <title>Tic tac Toe - Piponga</title>
+
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+  </head>
+  <body>
+    <div class="nav">
+      <div class="nav-title">
+        Tic Tac Toe
+      </div>
+    </div>
+
+<!--     <div class="btn-surrender-cont">
+      <div class="btn-surrender">
+        <button>SURRENDER</button>
+      </div>
+    </div> -->
+
+    <div class="wrapper">
+
+      <div class="game-players">
+        <div class="game-player-name-cont">
+          
+          <div id="owner-name" class="game-player-underline" style="float: left;" active="false">
+            <div class="game-player-name">
+              Fghmvvb bjkbkjh,
+            </div>
+            <div class="game-player-tmp1"></div>
+            <div class="game-player-icon">
+              <svg version="1.1" id="Selected_Items" xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;"
+                 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+                 x="0px" y="0px" width="20px" height="20px" viewBox="0 0 68 68" enable-background="new 0 0 68 68" xml:space="preserve">
+              <polygon fill-rule="evenodd" clip-rule="evenodd" fill="#dd4979" points="34,31.15 59.575,5.575 62.425,8.425 36.851,34 
+                62.425,59.575 59.575,62.425 34,36.85 8.425,62.425 5.575,59.575 31.15,34 5.575,8.425 8.425,5.575 "/>
+              </svg>            
+            </div>            
+          </div>
+
+        </div>
+
+        <div class="game-player-name-cont game-right-player">
+
+            <div id="opponent-name" class="game-player-underline" style="float: right;">
+              <div class="game-player-icon">
+                <svg version="1.1" id="Selected_Items" xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;"
+                   xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+                   x="0px" y="0px" width="20px" height="20px" viewBox="0 0 68 68" enable-background="new 0 0 68 68" xml:space="preserve">
+                <path fill-rule="evenodd" clip-rule="evenodd" fill="#2d9cdb" d="M34,0c9.389-0.004,17.414,3.321,24.075,9.975
+                  C64.695,16.602,68.003,24.61,68,34c0.003,9.38-3.306,17.396-9.925,24.05l-0.025,0.025C51.396,64.694,43.38,68.002,34,68
+                  c-9.346,0.003-17.346-3.305-24-9.925H9.976C3.321,51.414-0.004,43.389,0,34c0.004-9.39,3.337-17.398,10-24.025H9.976
+                  C16.637,3.32,24.646-0.005,34,0z M55.226,12.825C49.354,6.946,42.278,4.004,34,4c-8.245,0.005-15.304,2.946-21.175,8.825H12.8
+                  C6.93,18.665,3.997,25.723,4,34c0.005,8.278,2.946,15.353,8.825,21.225H12.8C18.68,61.072,25.746,63.997,34,64
+                  c8.275-0.002,15.35-2.919,21.226-8.75l0.024-0.025C61.081,49.35,63.998,42.275,64,34C63.997,25.723,61.072,18.665,55.226,12.825z"/>
+                </svg>              
+              </div>
+              <div class="game-player-tmp1"></div>
+              <div class="game-player-name">
+                Aaaagggffhjghgh HfvhjHhhh
+              </div>  
+            </div>
+          
+        </div>
+      </div>
+
+
+      <div class="game-field">
+        
+        <div class="field-row" style="height: 100%;">
+          <div class="field-row-child">
+            
+
+            <div class="field-cells-cont">
+
+                  <div class="field-cell" enabled="false">
+                    <div id="cell-circle" class="field-icon" data-visible="false" >
+                      <svg version="1.1" id="Selected_Items" xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;"
+                         xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+                         x="0px" y="0px" width="100%" height="100%" viewBox="0 0 68 68" enable-background="new 0 0 68 68" xml:space="preserve">
+                      <path fill-rule="evenodd" clip-rule="evenodd" fill="#2d9cdb" d="M34,0c9.389-0.004,17.414,3.321,24.075,9.975
+                        C64.695,16.602,68.003,24.61,68,34c0.003,9.38-3.306,17.396-9.925,24.05l-0.025,0.025C51.396,64.694,43.38,68.002,34,68
+                        c-9.346,0.003-17.346-3.305-24-9.925H9.976C3.321,51.414-0.004,43.389,0,34c0.004-9.39,3.337-17.398,10-24.025H9.976
+                        C16.637,3.32,24.646-0.005,34,0z M55.226,12.825C49.354,6.946,42.278,4.004,34,4c-8.245,0.005-15.304,2.946-21.175,8.825H12.8
+                        C6.93,18.665,3.997,25.723,4,34c0.005,8.278,2.946,15.353,8.825,21.225H12.8C18.68,61.072,25.746,63.997,34,64
+                        c8.275-0.002,15.35-2.919,21.226-8.75l0.024-0.025C61.081,49.35,63.998,42.275,64,34C63.997,25.723,61.072,18.665,55.226,12.825z"/>
+                      </svg>
+                    </div>
+                    <div id="cell-cross" class="field-icon" data-visible="true">
+                      <svg version="1.1" id="Selected_Items" xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;"
+                         xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+                         x="0px" y="0px" width="100%" height="100%" viewBox="0 0 68 68" enable-background="new 0 0 68 68" xml:space="preserve">
+                      <polygon fill-rule="evenodd" clip-rule="evenodd" fill="#dd4979" points="34,31.15 59.575,5.575 62.425,8.425 36.851,34
+                        62.425,59.575 59.575,62.425 34,36.85 8.425,62.425 5.575,59.575 31.15,34 5.575,8.425 8.425,5.575 "/>
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="field-cell">
+
+                  </div>
+                  <div class="field-cell">
+
+                  </div><br>
+
+
+                  <div class="field-cell">
+
+                  </div>
+                  <div class="field-cell">
+
+                  </div>
+                  <div class="field-cell">
+
+                  </div><br>
+
+
+                  <div class="field-cell">
+
+                  </div>
+                  <div class="field-cell">
+
+                  </div>
+                  <div class="field-cell">
+
+                  </div><br>
+
+            </div>  
+
+
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-time">
+            00:00:00
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="btn-surrender">
+            <button id="surrender">SURRENDER</button>
+          </div>          
+        </div>
+
+
+      </div>
+
+
+
+
+
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/game.js"></script>
+  </body>
+</html>
