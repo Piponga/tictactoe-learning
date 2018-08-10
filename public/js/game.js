@@ -16,17 +16,17 @@ var gameState = {
     status: 'ok',
     code: 0,
     youTurn: true,
-    gameDuration: 2342,
+    gameDuration: 0,
     field: [
-        'X?O',
-        '?XO',
+        '???',
+        '???',
         '???'
     ],
     winner: ''
 };
-var currentPlayer = 'opponent';
+var currentPlayer = ['owner','opponent'][Math.round(Math.random())];
 var startTime, startDuration;
-var timerMain, timerGameUpdate;
+var timerMain, timerDelayStep, timerGameUpdate;
 
 
 function gameInit() {
@@ -47,13 +47,14 @@ function gameInit() {
         renderTimer(gameState.gameDuration);
     }, 1000);
 
-    timerGameUpdate = setTimeout(function () {
-        renderState(gameState, currentPlayer);
-    }, 2000);
+    // timerGameUpdate = setTimeout(function () {
+    //     renderState(gameState, currentPlayer);
+    // }, 2000);
+
 }
 
 function setPlayersName(owner, opponent) {
-    $("#owner-name > .game-player-name").text(owner);
+    $("#owner-name > .game-player-name").text(owner + ' (you)');
     $("#opponent-name > .game-player-name").text(opponent);
 }
 
@@ -72,7 +73,7 @@ function setPlayerTurn(ownerOrOpponent) {
 function buildField(size) {
     if (!!$.trim($(".field-cells-cont").html())) return;    //is field container not empty
 
-    size = Math.min(size, 10);
+    size = Math.min(Math.max(size, 3), 10);
 
     var cellWidth = 100;
     var cellMargin = 3;
@@ -82,7 +83,7 @@ function buildField(size) {
     var iconPaddingCoeff = iconPadding / cellWidth;
 
     var maxWidth = $(".game-field").width();
-    var fieldHtml = '';
+    var fieldHtml = '', stateFieldLine = '';
 
     cellWidth = Math.min(cellWidth, maxWidth / size);
     cellMargin = Math.round(cellWidth * marginCoeff);
@@ -91,8 +92,15 @@ function buildField(size) {
     for(var r = 0; r < size; r++) {
         for(var c = 0; c < size; c++) {
             fieldHtml += createCell(r, c, cellWidth - cellMargin*2, cellMargin, iconPadding);
+            if (gameState.field.length < size) {
+                stateFieldLine += '?';
+            }
         }
         fieldHtml += '<br>';
+        if (gameState.field.length < size) {
+            gameState.field[r] = stateFieldLine;
+        }
+        stateFieldLine = '';
     }
 
     $(".field-cells-cont").append(fieldHtml);
@@ -162,7 +170,7 @@ var showCellFigure = function (r, c, figure, player) {
 
     if (player === 'owner') {
         cross.attr('colored', 'true');
-    } else {
+    } else if (player === 'opponent') {
         circle.attr('colored', 'true');
     }
 };
@@ -180,12 +188,201 @@ function clean() {
     $(".field-time").text(millisecondsToTime(0));
 }
 
+function checkWinner(state) {
+    var checkCount = 5;
+    var rows, cols;
+    var isCompleted = false;
+    var isHasEmpty = false;
+    var resultArray = [];
 
+    rows = state.field.length;
+    cols = state.field[0].length;
+    checkCount = Math.min(checkCount, rows);
+
+    var checkLine = function (row, col, count, way) {
+        var first = state.field[row][col];
+        if (first === '?') return ['?'];
+
+        var result = '';
+        var resultArr = [[row,col]];
+        var rr=row, cc=col, rrIncr, ccIncr;
+        var equal = true;
+
+        switch (way) {
+            case '-':
+                rrIncr = 0;
+                ccIncr = 1;
+                break;
+            case '\\':
+                rrIncr = 1;
+                ccIncr = 1;
+                break;
+            case '|':
+                rrIncr = 1;
+                ccIncr = 0;
+                break;
+            case '/':
+                rrIncr = 1;
+                ccIncr = -1;
+        }
+
+        count = Math.max(0, count-1);
+
+        for (var k = 0; k < count; k++) {
+            rr += rrIncr;
+            cc += ccIncr;
+
+            var cellVal = state.field[rr][cc];
+            if (cellVal === '?') return ['?'];
+
+            if (equal) {
+                equal = first === cellVal;
+                resultArr.push([rr,cc]);
+            }
+            // console.log(66, first, row, col, way, row + rr, col + cc, cellVal, equal);
+        }
+
+        if (equal) {
+            // console.log(77, resultArr)
+            // result = first === 'X' ? 'owner' : 'opponent';
+            return resultArr;
+        }
+
+        return [];
+    };
+
+    var checkCompleted = function (res) {
+        if (res[0] === '?') {
+            isHasEmpty = true;
+            res = [];
+            return false;
+        }
+        return res.length > 0;
+    };
+
+    for (var r = 0; r < rows; r++) {
+        for (var c = 0; c < cols; c++) {
+            var cMax = c + checkCount;
+            var rMax = r + checkCount;
+
+
+            if (!isCompleted && cMax <= cols) {
+                resultArray = checkLine(r, c, checkCount, '-');
+                isCompleted = checkCompleted(resultArray);
+            }
+            if (!isCompleted && cMax <= cols && rMax <= rows) {
+                resultArray = checkLine(r, c, checkCount, '\\');
+                isCompleted = checkCompleted(resultArray);
+            }
+            if (!isCompleted && rMax <= rows) {
+                resultArray = checkLine(r, c, checkCount, '|');
+                isCompleted = checkCompleted(resultArray);
+            }
+            if (!isCompleted && rMax <= rows && c >= checkCount-1) {
+                resultArray = checkLine(r, c, checkCount, '/');
+                isCompleted = checkCompleted(resultArray);
+            }
+        }
+    }
+
+    // console.log(222, isCompleted, isHasEmpty, resultArray)
+
+    if (isCompleted || !isHasEmpty) {
+        runEndGame(state, resultArray);
+
+        return true;
+    }
+
+    return false;
+}
+
+//--------------------------------------------------------------FINISH------------------------------
+function runEndGame(state, resArr) {
+    clearTimeout(timerMain);
+    clearTimeout(timerDelayStep);
+    $(".field-cell").attr('enabled', 'false');
+
+    var gameResult = 'draw';
+
+    if (resArr.length > 0) {
+        var winIcon = state.field[resArr[0][0]][resArr[0][1]];
+
+        gameResult = winIcon === 'X' ? 'owner' : 'opponent';
+    }
+
+    if (gameResult === 'draw') {
+        // turn colors to grayscale
+        $(".field-icon").attr('colored', 'false');
+        $(".field-cells-cont").css('opacity', '0.4');
+    } else {
+        // make a line under completed cells
+        for (var i = 0; i < resArr.length; i++) {
+            var r = resArr[i][0];
+            var c = resArr[i][1];
+            $(".field-cell[row='" + r + "'][col='" + c + "']").css('background-color', '#f3c94d');
+        }
+    }
+
+    console.log(gameResult);
+}
+
+//--------------------------------------------------------------------------------------
 $("#surrender").click(function (e) {
     e.preventDefault();
     console.log('surrender');
 });
 
 
-
+readUrlParams();
 gameInit();
+
+$(".field-cell").click(function (e) {
+    e.preventDefault();
+
+    var row = Number(e.currentTarget.attributes.row.value);
+    var col = Number(e.currentTarget.attributes.col.value);
+    var enabled = e.currentTarget.attributes.enabled.value === 'true';
+
+
+    if (!enabled) return;
+
+    var playerIcon = currentPlayer === 'owner' ? 'X' : 'O';
+
+    var arr = gameState.field[row].split('');
+    arr[col] = playerIcon;
+    gameState.field[row] = arr.join('');
+
+    gameState.field[row][col] = playerIcon;
+    renderState(gameState, currentPlayer);
+
+    if (checkWinner(gameState)) return;
+
+    timerDelayStep = setTimeout(function () {
+        currentPlayer = currentPlayer === 'owner' ? 'opponent' : 'owner';
+        setPlayerTurn(currentPlayer);
+        renderState(gameState, currentPlayer);
+
+
+    }, 100);
+});
+
+//--------------------------------------------------------------------------------------
+function readUrlParams() {
+    try {
+        var varName='', varValue=0;
+        var url_string = location.href;
+        var url = new URL(url_string);
+        var paramsArr = url.search.replace(/\?/,'').split(/[\?\&]/g);
+        if (paramsArr.length > 0) {
+            for (var k = 0; k < paramsArr.length; k++) {
+                if (paramsArr[k] !== '') {
+                    var arr = paramsArr[k].split('=');
+
+                    window.thisGame.size = Number(arr[1]);
+                }
+            }
+        }
+    } catch (err) {
+
+    }
+}
